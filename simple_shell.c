@@ -38,7 +38,7 @@ void executeCommand(char *inputBuffer)
 		command[0] = inputBuffer;
 		command[1] = NULL;
 
-		if (execve(inputBuffer, command, environ) == -1)
+		if (execve(inputBuffer, command, NULL) == -1)
 		{
 			perror("./shell");
 			exit(1);
@@ -51,19 +51,26 @@ void executeCommand(char *inputBuffer)
 }
 
 /**
- * main - Entry point of our program
- *
- * Return: no return
+ * main - Main entry point of our program
+ * @argc: Argument count
+ * @argv: Array of argument values pointer
+ * @env: NULL terminated array of strings
+ * Return: O Always success
  */
-int main(void)
+int main(int argc, char **argv, char **env)
 {
 	char *inputBuffer = NULL;
 	size_t bufferSize = 0;
 	ssize_t bytesRead;
 
+	(void)argc;
+	(void)argv;
+	(void)env;
+
 	while (1)
 	{
 		displayPrompt();
+
 		bytesRead = getline(&inputBuffer, &bufferSize, stdin);
 
 		if (bytesRead == -1)

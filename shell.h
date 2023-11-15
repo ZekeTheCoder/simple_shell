@@ -9,7 +9,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-extern char **environ;
 void displayPrompt(void);
 void executeCommand(char *inputBuffer);
 
