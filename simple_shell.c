@@ -7,88 +7,76 @@
  */
 void displayPrompt(void)
 {
-	write(STDOUT_FILENO, "$ ", 3);
+	if (isatty(STDIN_FILENO))
+		write(STDOUT_FILENO, "$ ", 3);
 }
 
 /**
- * handleInputError - handles user input errors
- * @bytesRead: number of bytes read during an input operation.
+ * executeCommand - executes commands
+ * @inputBuffer: user input
  *
  * Return: no return
  */
-void handleInputError(ssize_t bytesRead)
+void executeCommand(char *inputBuffer)
 {
-	if (bytesRead == -1)
-	{
-		/*perror("Shell Exit");*/
-		exit(1);
-	}
-}
+	pid_t childPid;
+	int childStatus;
 
-/**
- * createChildProcess - Creates a child process using the fork system call.
- *
- * Return: PID of the newly created child process for the parent,
- * or 0 for the child.
- */
-pid_t createChildProcess(void)
-{
-	pid_t child_pid = fork();
+	/* Create a child process */
+	childPid = fork();
 
-	if (child_pid == -1)
+	if (childPid == -1)
 	{
 		perror("child creation failed.");
 		exit(EXIT_FAILURE);
 	}
 
-	return (child_pid);
+	if (childPid == 0)
+	{
+		char *command[2];
+
+		command[0] = inputBuffer;
+		command[1] = NULL;
+
+		if (execve(inputBuffer, command, environ) == -1)
+		{
+			perror("./shell");
+			exit(1);
+		}
+	}
+	else
+	{
+		wait(&childStatus);
+	}
 }
 
 /**
- * runSimpleShell - runs our simple shell
+ * main - Entry point of our program
  *
  * Return: no return
  */
-void runSimpleShell(void)
+int main(void)
 {
 	char *inputBuffer = NULL;
 	size_t bufferSize = 0;
 	ssize_t bytesRead;
-	pid_t child_pid;
-	int child_status;
 
 	while (1)
 	{
-		if (isatty(STDIN_FILENO))
-			displayPrompt();
-
+		displayPrompt();
 		bytesRead = getline(&inputBuffer, &bufferSize, stdin);
-		handleInputError(bytesRead);
+
+		if (bytesRead == -1)
+		{
+			free(inputBuffer);
+			exit(1);
+		}
 
 		if (inputBuffer[bytesRead - 1] == '\n')
 			inputBuffer[bytesRead - 1] = '\0';
 
-		/* Create a child process */
-		child_pid = createChildProcess();
-
-		if (child_pid == 0)
-		{
-			char *command[2];
-
-			command[0] = inputBuffer;
-			command[1] = NULL;
-
-			if (execve(inputBuffer, command, environ) == -1)
-			{
-				perror("./shell");
-				exit(1);
-			}
-		}
-		else
-		{
-			wait(&child_status);
-		}
+		executeCommand(inputBuffer);
 	}
-
 	free(inputBuffer);
+	return (0);
 }

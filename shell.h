@@ -11,8 +11,6 @@
 
 extern char **environ;
 void displayPrompt(void);
-void runSimpleShell(void);
-void handleInputError(ssize_t bytesRead);
-pid_t createChildProcess(void);
+void executeCommand(char *inputBuffer);
 
 #endif /* SHELL_H */
