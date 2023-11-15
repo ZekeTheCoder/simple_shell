@@ -14,10 +14,10 @@ void displayPrompt(void)
 /**
  * executeCommand - executes commands
  * @inputBuffer: user input
- *
+ * @env: environ
  * Return: no return
  */
-void executeCommand(char *inputBuffer)
+void executeCommand(char *inputBuffer, char **env)
 {
 	pid_t childPid;
 	int childStatus;
@@ -38,7 +38,7 @@ void executeCommand(char *inputBuffer)
 		command[0] = inputBuffer;
 		command[1] = NULL;
 
-		if (execve(inputBuffer, command, NULL) == -1)
+		if (execve(inputBuffer, command, env) == -1)
 		{
 			perror("./shell");
 			exit(1);
@@ -65,7 +65,6 @@ int main(int argc, char **argv, char **env)
 
 	(void)argc;
 	(void)argv;
-	(void)env;
 
 	while (1)
 	{
@@ -82,7 +81,7 @@ int main(int argc, char **argv, char **env)
 		if (inputBuffer[bytesRead - 1] == '\n')
 			inputBuffer[bytesRead - 1] = '\0';
 
-		executeCommand(inputBuffer);
+		executeCommand(inputBuffer, env);
 	}
 	free(inputBuffer);
 	return (0);

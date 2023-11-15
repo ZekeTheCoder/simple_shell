@@ -10,6 +10,6 @@
 #include <sys/wait.h>
 
 void displayPrompt(void);
-void executeCommand(char *inputBuffer);
+void executeCommand(char *inputBuffer, char **env);
 
 #endif /* SHELL_H */
