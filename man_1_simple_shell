@@ -1,0 +1,21 @@
+NAME
+
+    Simple UNIX command interpreter
+
+SYNOPSIS
+
+    Code use the Betty style. Checked using betty-style.pl and betty-doc.pl.
+
+DESCRIPTION
+
+    Displays a prompt and wait for the user to type a command.
+    A command line always ends with a new line.
+    The prompt is displayed again each time a command has been executed.
+    If an executable cannot be found, print an error message and display the prompt again.
+    Handles errors.
+    You have to handle the “end of file” condition (Ctrl+D).
+
+AUTHOR
+
+    [Unarine] - UnarineBusisiwe
+    [Thabang] - ZekeTheCoder
