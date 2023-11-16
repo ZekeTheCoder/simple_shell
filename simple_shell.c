@@ -21,6 +21,9 @@ void executeCommand(char *inputBuffer, char **env)
 {
 	pid_t childPid;
 	int childStatus;
+	char *token;
+	char **tokenArray;
+	int i = 0;
 
 	/* Create a child process */
 	childPid = fork();
@@ -31,14 +34,20 @@ void executeCommand(char *inputBuffer, char **env)
 		exit(EXIT_FAILURE);
 	}
 
+	token = strtok(inputBuffer, " ");
+	tokenArray = malloc(sizeof(char *) * 1024);
+
+	for (i = 0; token; i++)
+	{
+		tokenArray[i] = token;
+		token = strtok(NULL, " \n");
+	}
+
+	tokenArray[i] = NULL;
+
 	if (childPid == 0)
 	{
-		char *command[2];
-
-		command[0] = inputBuffer;
-		command[1] = NULL;
-
-		if (execve(inputBuffer, command, env) == -1)
+		if (execve(tokenArray[0], tokenArray, env) == -1)
 		{
 			perror("./shell");
 			exit(1);
