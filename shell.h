@@ -11,5 +11,9 @@
 
 void displayPrompt(void);
 void executeCommand(char *inputBuffer, char **env);
+/*helper functions*/
+void tokenizeInput(char *inputBuffer, char **tokenArray);
+void executeAbsoluteCommand(char **tokenArray, char **env);
+void searchInPath(char **tokenArray, char **env);
 
 #endif /* SHELL_H */

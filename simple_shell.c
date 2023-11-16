@@ -13,17 +13,17 @@ void displayPrompt(void)
 
 /**
  * executeCommand - executes commands
+ *
  * @inputBuffer: user input
- * @env: environ
+ * @env: The environment variables.
+ *
  * Return: no return
  */
 void executeCommand(char *inputBuffer, char **env)
 {
 	pid_t childPid;
 	int childStatus;
-	char *token;
-	char **tokenArray;
-	int i = 0;
+	char **tokenArray = malloc(sizeof(char *) * 1024);
 
 	/* Create a child process */
 	childPid = fork();
@@ -34,28 +34,23 @@ void executeCommand(char *inputBuffer, char **env)
 		exit(EXIT_FAILURE);
 	}
 
-	token = strtok(inputBuffer, " ");
-	tokenArray = malloc(sizeof(char *) * 1024);
-
-	for (i = 0; token; i++)
-	{
-		tokenArray[i] = token;
-		token = strtok(NULL, " \n");
-	}
-
-	tokenArray[i] = NULL;
+	tokenizeInput(inputBuffer, tokenArray);
 
 	if (childPid == 0)
 	{
-		if (execve(tokenArray[0], tokenArray, env) == -1)
+		if (strchr(tokenArray[0], '/') != NULL)
 		{
-			perror("./shell");
-			exit(1);
+			executeAbsoluteCommand(tokenArray, env);
+		}
+		else
+		{
+			searchInPath(tokenArray, env);
 		}
 	}
 	else
 	{
 		wait(&childStatus);
+		free(tokenArray);
 	}
 }
 
